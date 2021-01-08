@@ -1,0 +1,4 @@
+photos/
+photos_output/
+.DS_Store
+__pycache__
