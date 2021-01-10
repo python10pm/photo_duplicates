@@ -4,8 +4,8 @@ import sys
 import numpy as np
 import pandas as pd
 
-from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import MinMaxScaler
 
 import matplotlib.pyplot as plt
 
@@ -24,13 +24,13 @@ class PhotoToArray(object):
         self.width = width
         self.verbose = verbose
 
-    def _get_full_path_photos(self):
+    def get_full_path_photos(self):
         '''
         Creates a list of full path for each photo in the original folder.
         '''
         return [os.path.join(self.path_input, file) for file in os.listdir(self.path_input)]
 
-    def _check_output_folder(self):
+    def check_output_folder(self):
         '''
         Checks if the output folder exists and creates it if needed.
         '''
@@ -41,9 +41,9 @@ class PhotoToArray(object):
         '''
         Iterates over all original photos and reshapes them into the specified height x width.
         '''
-        photos_path = self._get_full_path_photos()
+        photos_path = self.get_full_path_photos()
 
-        self._check_output_folder()
+        self.check_output_folder()
 
         for photo_path in photos_path:
             if ".DS_Store" not in photo_path:
@@ -116,8 +116,8 @@ if __name__ == "__main__":
     path_input = os.path.join(os.getcwd(), "photos")
     path_output = os.path.join(os.getcwd(), "photos_output")
 
-    height = 128
-    width = 128
+    height = 256
+    width = 256
 
     # instanciates the class and runs the resize and numeric conversion of photos
     photo_to_array = PhotoToArray(
@@ -133,8 +133,12 @@ if __name__ == "__main__":
     # computes the cosine similarity between photos
     scaler = MinMaxScaler()
     photo_df_ = scaler.fit_transform(photo_df)
-    photo_similarity = cosine_similarity(photo_df_)
     
+    # photo_df_ = photo_df.copy(deep = True)
+    # photo_df_ = photo_df_/255
+    
+    photo_similarity = cosine_similarity(photo_df_)
+
     photo_similarity_df = pd.DataFrame(photo_similarity, index = photo_df.index, columns = photo_df.index)
     print(photo_similarity_df.head())
 
